@@ -2,13 +2,18 @@ import cv2 as cv
 import os
 from matplotlib import pyplot as plt
 
-DEBUG = False
+DEBUG = True
+DOWNSCALE = 0.8
 
 
 def score_image(img, template):
-    downscale = 0.9
     h, w = template.shape
     result = 0
+    found_best = False
+    top_left = (0, 0)
+    bottom_right = (0, 0)
+    img_show = None
+    res_show = None
     while img.shape[0] >= h and img.shape[1] >= w:
         edges = cv.Canny(img, 150, 200)
         res = cv.matchTemplate(edges, template, cv.TM_CCORR_NORMED)
@@ -16,14 +21,18 @@ def score_image(img, template):
         result = max(result, max_val)
         if DEBUG:
             print(max_val)
-            top_left = max_loc
-            bottom_right = (top_left[0] + w, top_left[1] + h)
-            img_show = edges.copy()
-            cv.rectangle(img_show, top_left, bottom_right, 255, 2)
-            plt.subplot(121), plt.imshow(res, cmap='gray')
-            plt.subplot(122), plt.imshow(img_show, cmap='gray')
-            plt.show()
-        img = cv.resize(img, tuple(map(lambda x: int(x * downscale), img.shape[::-1])))
+            if result == max_val:
+                found_best = True
+                top_left = max_loc
+                bottom_right = (top_left[0] + w, top_left[1] + h)
+                img_show = edges.copy()
+                res_show = res.copy()
+        img = cv.resize(img, tuple(map(lambda x: int(x * DOWNSCALE), img.shape[::-1])))
+    if DEBUG and found_best:
+        cv.rectangle(img_show, top_left, bottom_right, 255, 2)
+        plt.subplot(121), plt.imshow(res_show, cmap='gray')
+        plt.subplot(122), plt.imshow(img_show, cmap='gray')
+        plt.show()
     return result
 
 
@@ -45,10 +54,10 @@ def print_result(scores, adj):
 
 def main():
     template = cv.Canny(cv.imread(os.path.join('imgs', 'logo50.png'), 0), 50, 200)
-    fake_scores = test(os.path.join('imgs', 'fake'), template)
-    original_scores = test(os.path.join('imgs', 'original'), template)
-    print_result(fake_scores, 'wrong')
-    print_result(original_scores, 'right')
+    fake_scores = test(os.path.join('imgs', 'negative'), template)
+    original_scores = test(os.path.join('imgs', 'positive'), template)
+    print_result(fake_scores, 'negative')
+    print_result(original_scores, 'positive')
 
 
 if __name__ == '__main__':
