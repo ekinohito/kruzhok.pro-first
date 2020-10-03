@@ -1,8 +1,9 @@
 import cv2 as cv
 import os
 from matplotlib import pyplot as plt
+import json
 
-DEBUG = True
+DEBUG = False
 DOWNSCALE = 0.8
 
 
@@ -31,6 +32,7 @@ def score_image(img, template):
     if DEBUG and found_best:
         cv.rectangle(img_show, top_left, bottom_right, 255, 2)
         plt.subplot(121), plt.imshow(res_show, cmap='gray')
+        plt.title(result)
         plt.subplot(122), plt.imshow(img_show, cmap='gray')
         plt.show()
     return result
@@ -58,6 +60,8 @@ def main():
     original_scores = test(os.path.join('imgs', 'positive'), template)
     print_result(fake_scores, 'negative')
     print_result(original_scores, 'positive')
+    with open('result.json', 'w+') as file:
+        json.dump({'original_scores': original_scores, 'fake_scores': fake_scores}, file)
 
 
 if __name__ == '__main__':
