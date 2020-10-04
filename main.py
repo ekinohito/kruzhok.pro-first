@@ -6,12 +6,28 @@ import cv2 as cv
 from matplotlib import pyplot as plt
 import numpy as np
 
+
 DEBUG = True
+"""
+True if program needs debug info False otherwise
+"""
 DOWNSCALE = 0.8
+"""
+Coefficient of image downscaling in size-search loop
+"""
 THRESHOLD = 0.35
+"""
+Manually found threshold of image's score required to be considered positive
+"""
 
 
 def score_image(img, template):
+    """
+
+    :param img: scored image
+    :param template: template image
+    :return: score of given image
+    """
     h, w = template.shape
     result = 0
     found_best = False
@@ -45,6 +61,12 @@ def score_image(img, template):
 
 
 def score_row(directory_path, template):
+    """
+
+    :param directory_path: path to scored directory
+    :param template: template image
+    :return: list of scores
+    """
     result = list()
     row_length = len(os.listdir(directory_path))
     for i, file_name in enumerate(os.listdir(directory_path)):
@@ -56,6 +78,12 @@ def score_row(directory_path, template):
 
 
 def print_result(scores, adj):
+    """
+
+    :param scores: list of scores
+    :param adj: what adjective to use
+    :return: nothing
+    """
     print(f'''Scores on {adj} images:
     min: {min(scores)};
     max: {max(scores)};
@@ -64,6 +92,10 @@ def print_result(scores, adj):
 
 
 def plot_hist():
+    """
+    plot histogram of positive and negatives scores
+    :return: nothings
+    """
     with open('result.json', 'r') as file:
         scores = json.load(file)
     plt.hist(scores['fake_scores'], bins=np.linspace(0, 1, 200))
@@ -73,6 +105,10 @@ def plot_hist():
 
 
 def analise_dataset():
+    """
+    analise whole dataset
+    :return: fake scores and original scores
+    """
     template = cv.Canny(cv.imread(os.path.join('imgs', 'logo50.png'), 0), 50, 200)
     fake_scores = score_row(os.path.join('imgs', 'negative'), template)
     original_scores = score_row(os.path.join('imgs', 'positive'), template)
@@ -82,6 +118,10 @@ def analise_dataset():
 
 
 def playground():
+    """
+    analise, print results and plot histogram
+    :return: nothing
+    """
     fake_scores, original_scores = analise_dataset()
     print_result(fake_scores, 'negative')
     print_result(original_scores, 'positive')
@@ -89,12 +129,22 @@ def playground():
 
 
 def analise_image(file_name, template):
+    """
+
+    :param file_name: image's filename
+    :param template: template image
+    :return: if image contains template
+    """
     img = cv.imread(file_name)
     score = score_image(img, template)
     return score >= THRESHOLD
 
 
 def test():
+    """
+    analise dataset, print results table and plot histogram
+    :return: nothing
+    """
     fake_scores, original_scores = analise_dataset()
     correct_positives, false_positives, correct_negatives, false_negatives = [list() for _ in range(4)]
     for score in original_scores:
@@ -112,16 +162,29 @@ def test():
     print(f'false-positives: {len(false_positives)}')
     print(f'false-negatives: {len(false_negatives)}')
     plot_hist()
+
+
 def auto_canny(image, sigma=0.5):
-    gray = cv.cvtColor(image, cv .COLOR_BGR2GRAY)# make gray
-    im = cv.medianBlur(gray,3)
+    """
+
+    :param image: given image
+    :param sigma: sigma
+    :return: image of edges
+    """
+    gray = cv.cvtColor(image, cv.COLOR_BGR2GRAY)  # make gray
+    im = cv.medianBlur(gray, 3)
     v = np.median(im)
     lower = int(max(0, (1.0 - sigma) * v))
     upper = int(min(255, (1.0 + sigma) * v))
     edged = cv.Canny(im, lower, upper)
     return edged
 
+
 def main():
+    """
+    take first command line argument as filename and print "kruzhok" if it contains logo
+    :return:
+    """
     template = cv.Canny(cv.imread(os.path.join('imgs', 'logo50.png'), 0), 50, 200)
     if analise_image(sys.argv[1], template):
         print('kruzhok')
