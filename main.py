@@ -1,12 +1,11 @@
 import sys
-
-import cv2 as cv
 import os
+import json
+import cv2 as cv
 from matplotlib import pyplot as plt
 import numpy as np
-import json
 
-DEBUG = True
+DEBUG = False
 DOWNSCALE = 0.8
 THRESHOLD = 0.35
 
