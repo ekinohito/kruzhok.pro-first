@@ -112,7 +112,14 @@ def test():
     print(f'false-positives: {len(false_positives)}')
     print(f'false-negatives: {len(false_negatives)}')
     plot_hist()
-
+def auto_canny(image, sigma=0.5):
+    gray = cv.cvtColor(image, cv .COLOR_BGR2GRAY)# make gray
+    im = cv.medianBlur(gray,3)
+    v = np.median(im)
+    lower = int(max(0, (1.0 - sigma) * v))
+    upper = int(min(255, (1.0 + sigma) * v))
+    edged = cv.Canny(im, lower, upper)
+    return edged
 
 def main():
     template = cv.Canny(cv.imread(os.path.join('imgs', 'logo50.png'), 0), 50, 200)
