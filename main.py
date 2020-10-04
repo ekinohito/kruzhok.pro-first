@@ -116,7 +116,8 @@ def test():
 
 def main():
     template = cv.Canny(cv.imread(os.path.join('imgs', 'logo50.png'), 0), 50, 200)
-    analise_image(sys.argv[1], template)
+    if analise_image(sys.argv[1], template):
+        print('kruzhok')
 
 
 if __name__ == '__main__':
