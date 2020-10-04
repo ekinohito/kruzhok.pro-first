@@ -6,9 +6,9 @@ from matplotlib import pyplot as plt
 import numpy as np
 import json
 
-DEBUG = False
+DEBUG = True
 DOWNSCALE = 0.8
-THRESHOLD = 0.33
+THRESHOLD = 0.35
 
 
 def score_image(img, template):
@@ -33,7 +33,7 @@ def score_image(img, template):
                 img_show = edges.copy()
                 res_show = res.copy()
         img = cv.resize(img, tuple(map(lambda x: int(x * DOWNSCALE), img.shape[-2::-1])))
-    if DEBUG and found_best and result < 0.35:
+    if DEBUG and found_best and result > 0.35:
         cv.rectangle(img_show, top_left, bottom_right, 255, 2)
         plt.subplot(221), plt.imshow(res_show, cmap='gray')
         plt.title(result)
