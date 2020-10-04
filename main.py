@@ -6,7 +6,7 @@ import cv2 as cv
 from matplotlib import pyplot as plt
 import numpy as np
 
-DEBUG = False
+DEBUG = True
 DOWNSCALE = 0.8
 THRESHOLD = 0.35
 
