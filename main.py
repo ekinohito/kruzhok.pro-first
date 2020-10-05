@@ -109,7 +109,7 @@ def analise_dataset():
     analise whole dataset
     :return: fake scores and original scores
     """
-    template = cv.Canny(cv.imread(os.path.join('imgs', 'logo50.png'), 0), 50, 200)
+    template = cv.Canny(cv.imread('logo50.png', 0), 50, 200)
     fake_scores = score_row(os.path.join('imgs', 'negative'), template)
     original_scores = score_row(os.path.join('imgs', 'positive'), template)
     with open('result.json', 'w+') as file:
@@ -185,7 +185,7 @@ def main():
     take first command line argument as filename and print "kruzhok" if it contains logo
     :return:
     """
-    template = cv.Canny(cv.imread(os.path.join('imgs', 'logo50.png'), 0), 50, 200)
+    template = cv.Canny(cv.imread('logo50.png', 0), 50, 200)
     if analise_image(sys.argv[1], template):
         print('kruzhok')
 
